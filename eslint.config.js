@@ -20,4 +20,14 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // Cypress tests use Chai assertions like expect(x).to.be.null, which look
+    // like unused expressions, and Cypress custom commands are typed with a
+    // namespace declaration.
+    files: ['cypress/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-namespace': 'off',
+    },
+  },
 ])
