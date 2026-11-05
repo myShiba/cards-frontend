@@ -1,12 +1,11 @@
 import PageTitle from '../components/PageTitle';
+import Login from '../components/Login';
 
 const LoginPage = () => {
   return (
     <div className="container app-container py-3">
       <PageTitle />
-      <main className="text-center text-secondary">
-        The login form arrives in Step 9.
-      </main>
+      <Login />
     </div>
   );
 };
