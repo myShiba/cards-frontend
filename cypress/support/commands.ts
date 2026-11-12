@@ -14,10 +14,10 @@ export interface NewUserData {
 }
 
 export interface NewCardData {
-  playerName: string;
-  teamName?: string;
-  cardValue?: number | string;
-  publisher?: string;
+  name: string;
+  breed?: string;
+  price?: number | string;
+  location?: string;
 }
 
 declare global {
@@ -100,15 +100,15 @@ Cypress.Commands.add("clearSession", () => {
 });
 
 Cypress.Commands.add("addCardByUI", (card: NewCardData) => {
-  cy.get("#cardText").clear().type(card.playerName);
-  if (card.teamName !== undefined) {
-    cy.get("#teamName").clear().type(card.teamName);
+  cy.get("#cardText").clear().type(card.name);
+  if (card.breed !== undefined) {
+    cy.get("#breed").clear().type(card.breed);
   }
-  if (card.cardValue !== undefined) {
-    cy.get("#cardValue").clear().type(card.cardValue.toString());
+  if (card.price !== undefined) {
+    cy.get("#price").clear().type(card.price.toString());
   }
-  if (card.publisher !== undefined) {
-    cy.get("#publisher").clear().type(card.publisher);
+  if (card.location !== undefined) {
+    cy.get("#location").clear().type(card.location);
   }
   cy.get("#addCardButton").should("be.visible").click();
 });

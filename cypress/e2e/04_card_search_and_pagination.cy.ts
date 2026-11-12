@@ -44,8 +44,8 @@ describe("04 - Card Search, Filtering & Pagination", () => {
         .within(() => {
           cy.contains("h3", "Bugs Bunny").should("be.visible");
           cy.contains(".badge", "Tune Squad").should("be.visible");
-          cy.contains("Publisher: Warner Collectibles").should("be.visible");
-          cy.contains("Value: $15000.00").should("be.visible");
+          cy.contains("Location: Warner Collectibles").should("be.visible");
+          cy.contains("Fee: $15000.00").should("be.visible");
         });
     });
   });

@@ -20,20 +20,20 @@ describe("03 - Card Creation & Management", () => {
 
     cy.get("#cardText")
       .should("be.visible")
-      .and("have.attr", "placeholder", "Player Name");
+      .and("have.attr", "placeholder", "Dog Name");
 
-    cy.get("#teamName")
+    cy.get("#breed")
       .should("be.visible")
-      .and("have.attr", "placeholder", "Team Name");
+      .and("have.attr", "placeholder", "Breed");
 
-    cy.get("#cardValue")
+    cy.get("#price")
       .should("be.visible")
       .and("have.attr", "placeholder", "0.00")
       .and("have.attr", "type", "number");
 
-    cy.get("#publisher")
+    cy.get("#location")
       .should("be.visible")
-      .and("have.attr", "placeholder", "Publisher");
+      .and("have.attr", "placeholder", "Location");
 
     cy.get("#addCardButton")
       .should("be.visible")
@@ -64,9 +64,9 @@ describe("03 - Card Creation & Management", () => {
 
       // Verify form fields were cleared
       cy.get("#cardText").should("have.value", "");
-      cy.get("#teamName").should("have.value", "");
-      cy.get("#cardValue").should("have.value", "");
-      cy.get("#publisher").should("have.value", "");
+      cy.get("#breed").should("have.value", "");
+      cy.get("#price").should("have.value", "");
+      cy.get("#location").should("have.value", "");
 
       // The new card joins the list (8 cards + 1)
       cy.contains("of 9 card(s)").should("be.visible");
@@ -79,7 +79,7 @@ describe("03 - Card Creation & Management", () => {
       body: { error: "You already have a card with that name" },
     }).as("duplicate");
 
-    cy.addCardByUI({ playerName: "Bugs Bunny" });
+    cy.addCardByUI({ name: "Bugs Bunny" });
     cy.wait("@duplicate");
 
     cy.get("#cardAddResult")
@@ -104,10 +104,10 @@ describe("03 - Card Creation & Management", () => {
       statusCode: 200,
       body: {
         _id: "card_01",
-        playerName: "Bugs Bunny (Updated)",
-        teamName: "Tune Squad",
-        cardValue: 15000,
-        publisher: "Warner Collectibles",
+        name: "Bugs Bunny (Updated)",
+        breed: "Tune Squad",
+        price: 15000,
+        location: "Warner Collectibles",
         userId: USER_ID,
       },
     }).as("updateCard");
@@ -123,7 +123,7 @@ describe("03 - Card Creation & Management", () => {
     cy.get("#addCardButton").should("contain.text", "Update Card").click();
 
     cy.wait("@updateCard")
-      .its("request.body.playerName")
+      .its("request.body.name")
       .should("eq", "Bugs Bunny (Updated)");
     cy.get("#cardAddResult").should("contain.text", "Card updated successfully!");
     cy.contains("h3", "Bugs Bunny (Updated)").should("be.visible");

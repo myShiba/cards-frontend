@@ -2,12 +2,13 @@ import { useState } from "react";
 
 export interface CardData {
   _id?: string;
-  playerName?: string;
-  teamName?: string;
-  cardValue?: number;
-  publisher?: string;
+  // Field names match the Dog model in the backend (models/Dog.js)
+  name?: string;
+  breed?: string;
+  age?: number;
+  price?: number;
+  location?: string;
   userId?: string;
-  card?: string;
 }
 
 interface CardListProps {
@@ -79,7 +80,7 @@ function CardList({ cards, initialItemsPerPage = 4, onDelete, onEdit }: CardList
       {/* Paginated Cards Grid */}
       <div className="row row-cols-1 row-cols-sm-2 g-3 mb-3">
         {currentCards.map((item, index) => {
-          const title = item.playerName || item.card || "Untitled Card";
+          const title = item.name || "Untitled Card";
           return (
             <div key={item._id || `${startIndex + index}`} className="col">
               <div className="card h-100 border shadow-sm rounded-3">
@@ -109,25 +110,32 @@ function CardList({ cards, initialItemsPerPage = 4, onDelete, onEdit }: CardList
                     )}
                   </div>
 
-                  {item.teamName && (
+                  {item.breed && (
                     <span className="badge bg-primary-subtle text-primary border border-primary-subtle me-1 mb-2">
-                      <i className="bi bi-shield me-1" aria-hidden="true"></i>
-                      {item.teamName}
+                      <i className="bi bi-heart-fill me-1" aria-hidden="true"></i>
+                      {item.breed}
                     </span>
                   )}
 
                   <div className="small text-secondary mt-2">
-                    {item.publisher && (
+                    {item.age !== undefined && item.age !== null && (
                       <div className="d-flex align-items-center mb-1">
-                        <i className="bi bi-building text-muted me-2" aria-hidden="true"></i>
-                        <span>Publisher: <strong>{item.publisher}</strong></span>
+                        <i className="bi bi-calendar-heart text-muted me-2" aria-hidden="true"></i>
+                        <span>Age: <strong>{item.age} {item.age === 1 ? "year" : "years"}</strong></span>
                       </div>
                     )}
 
-                    {item.cardValue !== undefined && item.cardValue !== null && (
+                    {item.location && (
+                      <div className="d-flex align-items-center mb-1">
+                        <i className="bi bi-geo-alt text-muted me-2" aria-hidden="true"></i>
+                        <span>Location: <strong>{item.location}</strong></span>
+                      </div>
+                    )}
+
+                    {item.price !== undefined && item.price !== null && (
                       <div className="d-flex align-items-center text-success fw-semibold mt-1">
                         <i className="bi bi-tag-fill me-2" aria-hidden="true"></i>
-                        <span>Value: ${typeof item.cardValue === "number" ? item.cardValue.toFixed(2) : item.cardValue}</span>
+                        <span>Fee: ${typeof item.price === "number" ? item.price.toFixed(2) : item.price}</span>
                       </div>
                     )}
                   </div>
