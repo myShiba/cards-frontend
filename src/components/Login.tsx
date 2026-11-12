@@ -28,6 +28,8 @@ function Login() {
   const [regLoginName, setRegLoginName] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
+  // The backend only lets "shelter" accounts add dogs; "user" accounts browse
+  const [regRole, setRegRole] = useState<"user" | "shelter">("user");
 
   function handleSetLoginName(e: ChangeEvent<HTMLInputElement>): void {
     setLoginName(e.target.value);
@@ -77,6 +79,7 @@ function Login() {
           login: regLoginName,
           email: regEmail,
           password: regPassword,
+          role: regRole,
         },
       });
 
@@ -268,6 +271,21 @@ function Login() {
               />
               <label htmlFor="regEmail">
                 <i className="bi bi-envelope me-2" aria-hidden="true"></i>Email Address
+              </label>
+            </div>
+
+            <div className="form-floating mb-3">
+              <select
+                className="form-select"
+                id="regRole"
+                value={regRole}
+                onChange={(e) => setRegRole(e.target.value as "user" | "shelter")}
+              >
+                <option value="user">Adopter (browse dogs)</option>
+                <option value="shelter">Shelter (add and manage dogs)</option>
+              </select>
+              <label htmlFor="regRole">
+                <i className="bi bi-house-heart me-2" aria-hidden="true"></i>Account Type
               </label>
             </div>
 

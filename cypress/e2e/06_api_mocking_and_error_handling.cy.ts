@@ -70,7 +70,7 @@ describe("06 - Network Edge Cases, Error Handling & Loading States", () => {
     cy.intercept("GET", "**/api/users/*/cards?search=*", {
       statusCode: 200,
       delay: 600,
-      body: [{ _id: "card_01", playerName: "Bugs Bunny", teamName: "Tune Squad" }],
+      body: [{ _id: "card_01", name: "Bugs Bunny", breed: "Tune Squad" }],
     }).as("slowSearch");
 
     cy.get("#searchText").type("Bugs");

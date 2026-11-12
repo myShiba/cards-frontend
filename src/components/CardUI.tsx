@@ -36,10 +36,11 @@ function CardUI() {
   const [isSearching, setIsSearching] = useState(true);
 
   // Add/Edit form state
-  const [playerName, setPlayerName] = useState("");
-  const [teamName, setTeamName] = useState("");
-  const [cardValue, setCardValue] = useState("");
-  const [publisher, setPublisher] = useState("");
+  const [name, setName] = useState("");
+  const [breed, setBreed] = useState("");
+  const [age, setAge] = useState("");
+  const [price, setPrice] = useState("");
+  const [location, setLocation] = useState("");
   const [editingCard, setEditingCard] = useState<CardData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [formFeedback, setFormFeedback] = useState<Feedback>(null);
@@ -63,18 +64,20 @@ function CardUI() {
 
   function resetForm(): void {
     setEditingCard(null);
-    setPlayerName("");
-    setTeamName("");
-    setCardValue("");
-    setPublisher("");
+    setName("");
+    setBreed("");
+    setAge("");
+    setPrice("");
+    setLocation("");
   }
 
   function startEditing(card: CardData): void {
     setEditingCard(card);
-    setPlayerName(card.playerName ?? "");
-    setTeamName(card.teamName ?? "");
-    setCardValue(card.cardValue?.toString() ?? "");
-    setPublisher(card.publisher ?? "");
+    setName(card.name ?? "");
+    setBreed(card.breed ?? "");
+    setAge(card.age?.toString() ?? "");
+    setPrice(card.price?.toString() ?? "");
+    setLocation(card.location ?? "");
     setFormFeedback(null);
   }
 
@@ -90,12 +93,14 @@ function CardUI() {
     setIsSaving(true);
     setFormFeedback(null);
 
-    const fields = {
-      playerName,
-      teamName,
-      cardValue: cardValue ? parseFloat(cardValue) : 0,
-      publisher,
+    // Field names match the Dog model in the backend (models/Dog.js)
+    const fields: Record<string, string | number> = {
+      name,
+      breed,
+      price: price ? parseFloat(price) : 0,
+      location,
     };
+    if (age) fields.age = parseFloat(age);
 
     try {
       const res = editingCard
@@ -172,7 +177,7 @@ function CardUI() {
                       type="text"
                       className="form-control"
                       id="searchText"
-                      placeholder="Search player, team, publisher, or value"
+                      placeholder="Search name, breed, location, age, or price"
                       value={search}
                       onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                     />
@@ -209,20 +214,24 @@ function CardUI() {
               <form onSubmit={handleSave}>
                 <div className="row g-3 mb-3">
                   <div className="col-12 col-sm-6">
-                    <label htmlFor="cardText" className="form-label fw-semibold">Player Name</label>
-                    <input type="text" className="form-control" id="cardText" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} required />
+                    <label htmlFor="cardText" className="form-label fw-semibold">Dog Name</label>
+                    <input type="text" className="form-control" id="cardText" placeholder="Dog Name" value={name} onChange={(e) => setName(e.target.value)} required />
                   </div>
                   <div className="col-12 col-sm-6">
-                    <label htmlFor="teamName" className="form-label fw-semibold">Team Name</label>
-                    <input type="text" className="form-control" id="teamName" placeholder="Team Name" value={teamName} onChange={(e) => setTeamName(e.target.value)} />
+                    <label htmlFor="breed" className="form-label fw-semibold">Breed</label>
+                    <input type="text" className="form-control" id="breed" placeholder="Breed" value={breed} onChange={(e) => setBreed(e.target.value)} />
                   </div>
                   <div className="col-12 col-sm-6">
-                    <label htmlFor="cardValue" className="form-label fw-semibold">Card Value ($)</label>
-                    <input type="number" step="0.01" className="form-control" id="cardValue" placeholder="0.00" value={cardValue} onChange={(e) => setCardValue(e.target.value)} />
+                    <label htmlFor="age" className="form-label fw-semibold">Age (years)</label>
+                    <input type="number" min="0" step="1" className="form-control" id="age" placeholder="0" value={age} onChange={(e) => setAge(e.target.value)} />
                   </div>
                   <div className="col-12 col-sm-6">
-                    <label htmlFor="publisher" className="form-label fw-semibold">Publisher</label>
-                    <input type="text" className="form-control" id="publisher" placeholder="Publisher" value={publisher} onChange={(e) => setPublisher(e.target.value)} />
+                    <label htmlFor="price" className="form-label fw-semibold">Adoption Fee ($)</label>
+                    <input type="number" min="0" step="0.01" className="form-control" id="price" placeholder="0.00" value={price} onChange={(e) => setPrice(e.target.value)} />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="location" className="form-label fw-semibold">Location</label>
+                    <input type="text" className="form-control" id="location" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
                   </div>
                 </div>
                 <button type="submit" id="addCardButton" className="btn btn-primary px-4 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 w-100" disabled={isSaving}>
