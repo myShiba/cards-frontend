@@ -28,7 +28,7 @@ function CardUI() {
   // the page is still on screen, and later renders must not depend on it.
   const [session] = useState(() => getSession()!);
   const canManageListings = session.role === "shelter";
-  const cardsRoute = `api/users/${session.id}/cards`;
+  const cardsRoute = `api/users/${session.id}/dogs`;
 
   const [cards, setCards] = useState<CardData[]>([]);
   const [search, setSearch] = useState("");
@@ -126,7 +126,7 @@ function CardUI() {
 
     try {
       const res = editingCard
-        ? await apiFetch<CardData>(`api/cards/${editingCard._id}`, { method: "PATCH", body: fields })
+        ? await apiFetch<CardData>(`api/dogs/${editingCard._id}`, { method: "PATCH", body: fields })
         : await apiFetch<CardData>(cardsRoute, { method: "POST", body: fields });
 
       if (!res.ok) {
@@ -154,7 +154,7 @@ function CardUI() {
     if (!window.confirm("Are you sure you want to remove this dog listing?")) return;
 
     try {
-      const res = await apiFetch<null>(`api/cards/${id}`, { method: "DELETE" });
+      const res = await apiFetch<null>(`api/dogs/${id}`, { method: "DELETE" });
 
       if (!res.ok) {
         setFormFeedback({ text: "API Error: " + res.error, isError: true });

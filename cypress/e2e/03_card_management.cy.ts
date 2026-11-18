@@ -5,7 +5,7 @@ describe("03 - Card Creation & Management", () => {
     cy.clearLocalStorage();
     cy.fixture("cards.json").then((data) => {
       // The cards page loads the user's cards as soon as it opens
-      cy.intercept("GET", "**/api/users/*/cards*", {
+      cy.intercept("GET", "**/api/users/*/dogs*", {
         statusCode: 200,
         body: data.mockCardList,
       }).as("loadCards");
@@ -49,7 +49,7 @@ describe("03 - Card Creation & Management", () => {
 
   it("should successfully add a new card and reset form inputs", () => {
     cy.fixture("cards.json").then((data) => {
-      cy.intercept("POST", `**/api/users/${USER_ID}/cards`, {
+      cy.intercept("POST", `**/api/users/${USER_ID}/dogs`, {
         statusCode: 201,
         body: { _id: "card_99", ...data.newCard, userId: USER_ID },
       }).as("addCardRequest");
@@ -83,9 +83,9 @@ describe("03 - Card Creation & Management", () => {
   });
 
   it("should show the API's error when a card can't be added", () => {
-    cy.intercept("POST", `**/api/users/${USER_ID}/cards`, {
+    cy.intercept("POST", `**/api/users/${USER_ID}/dogs`, {
       statusCode: 409,
-      body: { error: "You already have a card with that name" },
+      body: { error: "You already have a dog with that name" },
     }).as("duplicate");
 
     cy.addCardByUI({ name: "Bugs Bunny" });
@@ -93,11 +93,11 @@ describe("03 - Card Creation & Management", () => {
 
     cy.get("#cardAddResult")
       .should("be.visible")
-      .and("contain.text", "You already have a card with that name");
+      .and("contain.text", "You already have a dog with that name");
   });
 
   it("should successfully delete a card", () => {
-    cy.intercept("DELETE", "**/api/cards/card_01", { statusCode: 204 }).as("deleteCard");
+    cy.intercept("DELETE", "**/api/dogs/card_01", { statusCode: 204 }).as("deleteCard");
 
     cy.get("#cardListContainer .card").first().within(() => {
       cy.get("button[aria-label='Delete Dog']").click();
@@ -109,7 +109,7 @@ describe("03 - Card Creation & Management", () => {
   });
 
   it("should successfully edit a card", () => {
-    cy.intercept("PATCH", "**/api/cards/card_01", {
+    cy.intercept("PATCH", "**/api/dogs/card_01", {
       statusCode: 200,
       body: {
         _id: "card_01",

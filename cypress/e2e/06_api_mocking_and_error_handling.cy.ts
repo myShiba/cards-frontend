@@ -19,12 +19,12 @@ describe("06 - Network Edge Cases, Error Handling & Loading States", () => {
   });
 
   it("should show error alert on network failure / disconnection during search", () => {
-    cy.intercept("GET", "**/api/users/*/cards", { statusCode: 200, body: [] }).as("loadCards");
+    cy.intercept("GET", "**/api/users/*/dogs", { statusCode: 200, body: [] }).as("loadCards");
     cy.setSession();
     cy.visit("/cards");
     cy.wait("@loadCards");
 
-    cy.intercept("GET", "**/api/users/*/cards?search=*", {
+    cy.intercept("GET", "**/api/users/*/dogs?search=*", {
       forceNetworkError: true,
     }).as("networkErrorSearch");
 
@@ -36,7 +36,7 @@ describe("06 - Network Edge Cases, Error Handling & Loading States", () => {
   });
 
   it("should display loading spinner during login request", () => {
-    cy.intercept("GET", "**/api/users/*/cards*", { statusCode: 200, body: [] });
+    cy.intercept("GET", "**/api/users/*/dogs*", { statusCode: 200, body: [] });
     cy.intercept("POST", "**/api/auth/login", {
       statusCode: 200,
       delay: 800,
@@ -62,12 +62,12 @@ describe("06 - Network Edge Cases, Error Handling & Loading States", () => {
   });
 
   it("should display loading spinner during card search request", () => {
-    cy.intercept("GET", "**/api/users/*/cards", { statusCode: 200, body: [] }).as("loadCards");
+    cy.intercept("GET", "**/api/users/*/dogs", { statusCode: 200, body: [] }).as("loadCards");
     cy.setSession();
     cy.visit("/cards");
     cy.wait("@loadCards");
 
-    cy.intercept("GET", "**/api/users/*/cards?search=*", {
+    cy.intercept("GET", "**/api/users/*/dogs?search=*", {
       statusCode: 200,
       delay: 600,
       body: [{ _id: "card_01", name: "Bugs Bunny", breed: "Tune Squad" }],

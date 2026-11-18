@@ -2,7 +2,7 @@ describe("02 - Navigation, Routing & Session Management", () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     // The cards page loads the user's cards as soon as it opens
-    cy.intercept("GET", "**/api/users/*/cards*", { statusCode: 200, body: [] });
+    cy.intercept("GET", "**/api/users/*/dogs*", { statusCode: 200, body: [] });
   });
 
   it("should display user session details in LoggedInName component", () => {
@@ -46,19 +46,19 @@ describe("02 - Navigation, Routing & Session Management", () => {
   });
 
   it("should send the saved token with API requests", () => {
-    cy.intercept("GET", "**/api/users/*/cards*", { statusCode: 200, body: [] }).as("loadCards");
+    cy.intercept("GET", "**/api/users/*/dogs*", { statusCode: 200, body: [] }).as("loadCards");
 
     cy.setSession({ token: "abc123", id: "60c72b2f9b1d8b2bad000001" });
     cy.visit("/cards");
 
     cy.wait("@loadCards").then((interception) => {
       expect(interception.request.headers.authorization).to.eq("Bearer abc123");
-      expect(interception.request.url).to.include("/api/users/60c72b2f9b1d8b2bad000001/cards");
+      expect(interception.request.url).to.include("/api/users/60c72b2f9b1d8b2bad000001/dogs");
     });
   });
 
   it("should log out when the API rejects the token", () => {
-    cy.intercept("GET", "**/api/users/*/cards*", {
+    cy.intercept("GET", "**/api/users/*/dogs*", {
       statusCode: 401,
       body: { error: "Invalid or expired token" },
     }).as("expired");

@@ -2,7 +2,7 @@ describe("05 - Responsive Layout & Accessibility Testing", () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     // The cards page loads the user's cards as soon as it opens
-    cy.intercept("GET", "**/api/users/*/cards*", { statusCode: 200, body: [] });
+    cy.intercept("GET", "**/api/users/*/dogs*", { statusCode: 200, body: [] });
   });
 
   describe("Responsive Layouts across Devices", () => {

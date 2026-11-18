@@ -3,7 +3,7 @@ describe("04 - Card Search, Filtering & Pagination", () => {
     cy.clearLocalStorage();
     cy.fixture("cards.json").then((data) => {
       // The cards page loads the user's whole collection as soon as it opens
-      cy.intercept("GET", "**/api/users/*/cards", {
+      cy.intercept("GET", "**/api/users/*/dogs", {
         statusCode: 200,
         body: data.mockCardList,
       }).as("loadCards");
@@ -18,13 +18,13 @@ describe("04 - Card Search, Filtering & Pagination", () => {
   });
 
   it("should show the user's whole collection when the page opens", () => {
-    cy.get("#cardSearchResult").should("contain.text", "8 card(s) found");
+    cy.get("#cardSearchResult").should("contain.text", "8 dog(s) found");
     cy.contains("Showing 1–4 of 8 dog(s)").should("be.visible");
   });
 
   it("should perform a card search and render the card grid", () => {
     cy.fixture("cards.json").then((data) => {
-      cy.intercept("GET", "**/api/users/*/cards?search=Bugs", {
+      cy.intercept("GET", "**/api/users/*/dogs?search=Bugs", {
         statusCode: 200,
         body: data.singleSearchResult,
       }).as("searchBugs");
@@ -64,17 +64,17 @@ describe("04 - Card Search, Filtering & Pagination", () => {
 
     // Go to page 2
     cy.get(".pagination").contains("button", "2").click();
-    cy.contains("Showing 5–8 of 8 card(s)").should("be.visible");
+    cy.contains("Showing 5–8 of 8 dog(s)").should("be.visible");
     cy.contains("h3", "Elmer Fudd").should("be.visible");
     cy.contains("h3", "Tasmanian Devil").should("be.visible");
 
     // Test "Prev" button
     cy.get(".pagination").contains("button", "Prev").click();
-    cy.contains("Showing 1–4 of 8 card(s)").should("be.visible");
+    cy.contains("Showing 1–4 of 8 dog(s)").should("be.visible");
 
     // Change items per page to 2
     cy.get("#itemsPerPageSelect").select("2");
-    cy.contains("Showing 1–2 of 8 card(s)").should("be.visible");
+    cy.contains("Showing 1–2 of 8 dog(s)").should("be.visible");
     cy.get("#cardListContainer .row .col").should("have.length", 2);
 
     // Verify pagination pages count updated to 4 pages (8 / 2 = 4)
@@ -83,7 +83,7 @@ describe("04 - Card Search, Filtering & Pagination", () => {
 
   it("should handle empty search results gracefully", () => {
     cy.fixture("cards.json").then((data) => {
-      cy.intercept("GET", "**/api/users/*/cards?search=Nonexistent", {
+      cy.intercept("GET", "**/api/users/*/dogs?search=Nonexistent", {
         statusCode: 200,
         body: data.emptyResult,
       }).as("searchEmpty");
@@ -93,7 +93,7 @@ describe("04 - Card Search, Filtering & Pagination", () => {
 
       cy.get("#cardSearchResult")
         .should("be.visible")
-        .and("contain.text", "0 card(s) found");
+        .and("contain.text", "0 dog(s) found");
 
       // Grid shouldn't display any cards
       cy.get("#cardListContainer").should("not.exist");
