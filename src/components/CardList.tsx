@@ -8,6 +8,10 @@ export interface CardData {
   age?: number;
   price?: number;
   location?: string;
+  description?: string;
+  gender?: string;
+  intakeDate?: string;
+  size?: string;
   userId?: string;
 }
 
@@ -52,7 +56,7 @@ function CardList({ cards, initialItemsPerPage = 4, onDelete, onEdit }: CardList
       {/* Header and Controls */}
       <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom">
         <span className="fw-semibold text-secondary small">
-          Showing <strong>{totalItems > 0 ? startIndex + 1 : 0}–{endIndex}</strong> of <strong>{totalItems}</strong> card(s)
+          Showing <strong>{totalItems > 0 ? startIndex + 1 : 0}–{endIndex}</strong> of <strong>{totalItems}</strong> dog(s)
         </span>
 
         <div className="d-flex align-items-center gap-2">
@@ -80,7 +84,7 @@ function CardList({ cards, initialItemsPerPage = 4, onDelete, onEdit }: CardList
       {/* Paginated Cards Grid */}
       <div className="row row-cols-1 row-cols-sm-2 g-3 mb-3">
         {currentCards.map((item, index) => {
-          const title = item.name || "Untitled Card";
+          const title = item.name || "Unnamed Dog";
           return (
             <div key={item._id || `${startIndex + index}`} className="col">
               <div className="card h-100 border shadow-sm rounded-3">
@@ -94,7 +98,7 @@ function CardList({ cards, initialItemsPerPage = 4, onDelete, onEdit }: CardList
                       <button
                         className="btn btn-outline-danger btn-sm border-0 p-0"
                         onClick={() => onDelete(item._id!)}
-                        aria-label="Delete Card"
+                        aria-label="Delete Dog"
                       >
                         <i className="bi bi-trash3-fill" aria-hidden="true"></i>
                       </button>
@@ -103,7 +107,7 @@ function CardList({ cards, initialItemsPerPage = 4, onDelete, onEdit }: CardList
                       <button
                         className="btn btn-outline-primary btn-sm border-0 p-0 ms-1"
                         onClick={() => onEdit(item)}
-                        aria-label="Edit Card"
+                        aria-label={`Edit ${title}`}
                       >
                         <i className="bi bi-pencil-square" aria-hidden="true"></i>
                       </button>
@@ -132,11 +136,36 @@ function CardList({ cards, initialItemsPerPage = 4, onDelete, onEdit }: CardList
                       </div>
                     )}
 
+                    {item.gender && (
+                      <div className="d-flex align-items-center mb-1">
+                        <i className="bi bi-gender-ambiguous text-muted me-2" aria-hidden="true"></i>
+                        <span>Gender: <strong>{item.gender.charAt(0).toUpperCase() + item.gender.slice(1)}</strong></span>
+                      </div>
+                    )}
+
+                    {item.size && (
+                      <div className="d-flex align-items-center mb-1">
+                        <i className="bi bi-arrows-angle-expand text-muted me-2" aria-hidden="true"></i>
+                        <span>Size: <strong>{item.size.charAt(0).toUpperCase() + item.size.slice(1)}</strong></span>
+                      </div>
+                    )}
+
+                    {item.intakeDate && (
+                      <div className="d-flex align-items-center mb-1">
+                        <i className="bi bi-calendar-plus text-muted me-2" aria-hidden="true"></i>
+                        <span>Intake date: <strong>{item.intakeDate.split("T")[0]}</strong></span>
+                      </div>
+                    )}
+
                     {item.price !== undefined && item.price !== null && (
                       <div className="d-flex align-items-center text-success fw-semibold mt-1">
                         <i className="bi bi-tag-fill me-2" aria-hidden="true"></i>
                         <span>Fee: ${typeof item.price === "number" ? item.price.toFixed(2) : item.price}</span>
                       </div>
+                    )}
+
+                    {item.description && (
+                      <p className="mt-2 mb-0 text-body-secondary">{item.description}</p>
                     )}
                   </div>
                 </div>
@@ -148,7 +177,7 @@ function CardList({ cards, initialItemsPerPage = 4, onDelete, onEdit }: CardList
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <nav aria-label="Card search results pagination" className="d-flex justify-content-center mt-3">
+        <nav aria-label="Dog search results pagination" className="d-flex justify-content-center mt-3">
           <ul className="pagination pagination-sm mb-0">
             <li className={`page-item ${validCurrentPage === 1 ? "disabled" : ""}`}>
               <button

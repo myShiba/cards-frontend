@@ -77,6 +77,7 @@ describe("01 - Authentication & User Registration Flows", () => {
             firstName: users.validUser.firstName,
             lastName: users.validUser.lastName,
             login: users.validUser.login,
+            role: "shelter",
           },
         },
       }).as("loginSuccess");
@@ -100,6 +101,7 @@ describe("01 - Authentication & User Registration Flows", () => {
         expect(parsed.id).to.eq(users.validUser.id);
         expect(parsed.firstName).to.eq(users.validUser.firstName);
         expect(parsed.lastName).to.eq(users.validUser.lastName);
+        expect(parsed.role).to.eq("shelter");
       });
     });
   });
@@ -136,6 +138,7 @@ describe("01 - Authentication & User Registration Flows", () => {
             firstName: users.newUser.firstName,
             lastName: users.newUser.lastName,
             login: users.newUser.login,
+            role: "user",
           },
         },
       }).as("registerSuccess");
@@ -158,6 +161,7 @@ describe("01 - Authentication & User Registration Flows", () => {
         expect(parsed.token).to.eq("new-user-token");
         expect(parsed.firstName).to.eq(users.newUser.firstName);
         expect(parsed.lastName).to.eq(users.newUser.lastName);
+        expect(parsed.role).to.eq("user");
       });
     });
   });

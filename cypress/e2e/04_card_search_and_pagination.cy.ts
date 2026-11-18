@@ -19,7 +19,7 @@ describe("04 - Card Search, Filtering & Pagination", () => {
 
   it("should show the user's whole collection when the page opens", () => {
     cy.get("#cardSearchResult").should("contain.text", "8 card(s) found");
-    cy.contains("Showing 1–4 of 8 card(s)").should("be.visible");
+    cy.contains("Showing 1–4 of 8 dog(s)").should("be.visible");
   });
 
   it("should perform a card search and render the card grid", () => {
@@ -35,7 +35,7 @@ describe("04 - Card Search, Filtering & Pagination", () => {
       // Verify status badge
       cy.get("#cardSearchResult")
         .should("be.visible")
-        .and("contain.text", "1 card(s) found");
+        .and("contain.text", "1 dog(s) found");
 
       // Verify card grid
       cy.get("#cardListContainer").should("be.visible");
@@ -53,7 +53,7 @@ describe("04 - Card Search, Filtering & Pagination", () => {
   it("should paginate results and allow switching items per page", () => {
     // Total 8 cards in mockCardList, default per page is 4
     cy.get("#cardListContainer").should("be.visible");
-    cy.contains("Showing 1–4 of 8 card(s)").should("be.visible");
+    cy.contains("Showing 1–4 of 8 dog(s)").should("be.visible");
 
     // Verify 4 cards are currently shown
     cy.get("#cardListContainer .row .col").should("have.length", 4);

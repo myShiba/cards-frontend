@@ -10,13 +10,13 @@ describe("03 - Card Creation & Management", () => {
         body: data.mockCardList,
       }).as("loadCards");
     });
-    cy.setSession({ id: USER_ID, firstName: "John", lastName: "Aedo" });
+    cy.setSession({ id: USER_ID, firstName: "John", lastName: "Aedo", role: "shelter" });
     cy.visit("/cards");
     cy.wait("@loadCards");
   });
 
-  it("should render all Add Card form inputs with proper labels and icons", () => {
-    cy.contains("h2", "Add New Card").should("be.visible");
+  it("should render all shelter listing form inputs", () => {
+    cy.contains("h2", "Add a Shelter Dog").should("be.visible");
 
     cy.get("#cardText")
       .should("be.visible")
@@ -35,9 +35,14 @@ describe("03 - Card Creation & Management", () => {
       .should("be.visible")
       .and("have.attr", "placeholder", "Location");
 
+    cy.get("#description").should("be.visible");
+    cy.get("#gender").should("be.visible").find("option").should("have.length", 4);
+    cy.get("#intakeDate").should("be.visible").and("have.attr", "type", "date");
+    cy.get("#size").should("be.visible").find("option").should("have.length", 4);
+
     cy.get("#addCardButton")
       .should("be.visible")
-      .and("contain.text", "Add Card");
+      .and("contain.text", "Add Dog");
 
     cy.get("#cardAddResult").should("have.class", "d-none");
   });
@@ -60,16 +65,20 @@ describe("03 - Card Creation & Management", () => {
       cy.get("#cardAddResult")
         .should("be.visible")
         .and("not.have.class", "d-none")
-        .and("contain.text", "Card has been added");
+        .and("contain.text", "Dog has been added to the shelter listings");
 
       // Verify form fields were cleared
       cy.get("#cardText").should("have.value", "");
       cy.get("#breed").should("have.value", "");
       cy.get("#price").should("have.value", "");
       cy.get("#location").should("have.value", "");
+      cy.get("#description").should("have.value", "");
+      cy.get("#gender").should("have.value", "");
+      cy.get("#intakeDate").should("have.value", "");
+      cy.get("#size").should("have.value", "");
 
       // The new card joins the list (8 cards + 1)
-      cy.contains("of 9 card(s)").should("be.visible");
+      cy.contains("of 9 dog(s)").should("be.visible");
     });
   });
 
@@ -91,12 +100,12 @@ describe("03 - Card Creation & Management", () => {
     cy.intercept("DELETE", "**/api/cards/card_01", { statusCode: 204 }).as("deleteCard");
 
     cy.get("#cardListContainer .card").first().within(() => {
-      cy.get("button[aria-label='Delete Card']").click();
+      cy.get("button[aria-label='Delete Dog']").click();
     });
 
     cy.wait("@deleteCard");
     cy.get("#cardListContainer").should("not.contain", "Bugs Bunny");
-    cy.get("#cardAddResult").should("contain.text", "Card deleted successfully");
+    cy.get("#cardAddResult").should("contain.text", "Dog listing removed successfully");
   });
 
   it("should successfully edit a card", () => {
@@ -113,30 +122,42 @@ describe("03 - Card Creation & Management", () => {
     }).as("updateCard");
 
     cy.get("#cardListContainer .card").first().within(() => {
-      cy.get("button[aria-label='Edit Card']").click();
+      cy.get("button[aria-label='Edit Bugs Bunny']").click();
     });
 
     // Clicking Edit loads the card into the form
-    cy.contains("h2", "Edit Card").should("be.visible");
+    cy.contains("h2", "Edit Dog Listing").should("be.visible");
     cy.get("#cardText").should("have.value", "Bugs Bunny");
     cy.get("#cardText").clear().type("Bugs Bunny (Updated)");
-    cy.get("#addCardButton").should("contain.text", "Update Card").click();
+    cy.get("#addCardButton").should("contain.text", "Update Listing").click();
 
     cy.wait("@updateCard")
       .its("request.body.name")
       .should("eq", "Bugs Bunny (Updated)");
-    cy.get("#cardAddResult").should("contain.text", "Card updated successfully!");
+    cy.get("#cardAddResult").should("contain.text", "Dog listing updated successfully!");
     cy.contains("h3", "Bugs Bunny (Updated)").should("be.visible");
-    cy.contains("h2", "Add New Card").should("be.visible");
+    cy.contains("h2", "Add a Shelter Dog").should("be.visible");
   });
 
   it("should cancel an edit without saving", () => {
     cy.get("#cardListContainer .card").first().within(() => {
-      cy.get("button[aria-label='Edit Card']").click();
+      cy.get("button[aria-label='Edit Bugs Bunny']").click();
     });
 
     cy.get("#cancelEditButton").click();
-    cy.contains("h2", "Add New Card").should("be.visible");
+    cy.contains("h2", "Add a Shelter Dog").should("be.visible");
     cy.get("#cardText").should("have.value", "");
+  });
+
+  it("should not let adopter accounts manage dog listings", () => {
+    cy.clearSession();
+    cy.setSession({ id: USER_ID, role: "user" });
+    cy.visit("/cards");
+    cy.wait("@loadCards");
+
+    cy.contains("h2", "Shelter accounts only").should("be.visible");
+    cy.get("#addCardButton").should("not.exist");
+    cy.get("#cardListContainer button[aria-label='Delete Dog']").should("not.exist");
+    cy.get("#cardListContainer button[aria-label='Edit Card']").should("not.exist");
   });
 });

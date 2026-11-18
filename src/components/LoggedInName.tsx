@@ -25,7 +25,7 @@ function LoggedInName() {
             <i className="bi bi-person-fill" aria-hidden="true"></i>
           </div>
           <div>
-            <span className="text-secondary small d-block">Current Session</span>
+            <span className="text-secondary small d-block">Shelter Session</span>
             <span id="userName" className="fw-semibold text-body-emphasis">
               Logged In As {name}
             </span>

@@ -3,7 +3,11 @@
     "name": "Rex",
     "breed": "Husky",
     "price": 450,
-    "location": "Orlando, FL"
+    "location": "Orlando, FL",
+    "description": "Friendly and energetic.",
+    "gender": "male",
+    "intakeDate": "2026-04-15",
+    "size": "large"
   },
   "mockCardList": [
     {

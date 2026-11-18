@@ -3,6 +3,7 @@ export interface UserSession {
   id: string;
   firstName: string;
   lastName: string;
+  role?: string;
 }
 
 export interface NewUserData {
@@ -18,6 +19,10 @@ export interface NewCardData {
   breed?: string;
   price?: number | string;
   location?: string;
+  description?: string;
+  gender?: string;
+  intakeDate?: string;
+  size?: string;
 }
 
 declare global {
@@ -90,6 +95,7 @@ Cypress.Commands.add("setSession", (session?: Partial<UserSession>) => {
     id: "60c72b2f9b1d8b2bad000001",
     firstName: "John",
     lastName: "Aedo",
+    role: "shelter",
   };
   const finalSession = { ...defaultSession, ...session };
   window.localStorage.setItem("user_data", JSON.stringify(finalSession));
@@ -109,6 +115,18 @@ Cypress.Commands.add("addCardByUI", (card: NewCardData) => {
   }
   if (card.location !== undefined) {
     cy.get("#location").clear().type(card.location);
+  }
+  if (card.description !== undefined) {
+    cy.get("#description").clear().type(card.description);
+  }
+  if (card.gender !== undefined) {
+    cy.get("#gender").select(card.gender);
+  }
+  if (card.intakeDate !== undefined) {
+    cy.get("#intakeDate").type(card.intakeDate);
+  }
+  if (card.size !== undefined) {
+    cy.get("#size").select(card.size);
   }
   cy.get("#addCardButton").should("be.visible").click();
 });

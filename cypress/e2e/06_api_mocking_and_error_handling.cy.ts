@@ -84,6 +84,6 @@ describe("06 - Network Edge Cases, Error Handling & Loading States", () => {
 
     cy.wait("@slowSearch");
     cy.get("#searchCardButton").should("not.be.disabled");
-    cy.get("#cardSearchResult").should("contain.text", "1 card(s) found");
+    cy.get("#cardSearchResult").should("contain.text", "1 dog(s) found");
   });
 });

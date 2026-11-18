@@ -15,7 +15,7 @@ async function fetchCards(cardsRoute: string, term = ""): Promise<CardsResult> {
     const res = await apiFetch<CardData[]>(`${cardsRoute}${query}`);
 
     return res.ok
-      ? { cards: res.data, feedback: `${res.data.length} card(s) found` }
+      ? { cards: res.data, feedback: `${res.data.length} dog(s) found` }
       : { cards: [], feedback: "API Error: " + res.error };
   } catch (error: unknown) {
     return { cards: [], feedback: (error as Error).toString() };
@@ -27,6 +27,7 @@ function CardUI() {
   // Read it once: if the API rejects the token, the session is cleared while
   // the page is still on screen, and later renders must not depend on it.
   const [session] = useState(() => getSession()!);
+  const canManageListings = session.role === "shelter";
   const cardsRoute = `api/users/${session.id}/cards`;
 
   const [cards, setCards] = useState<CardData[]>([]);
@@ -41,6 +42,10 @@ function CardUI() {
   const [age, setAge] = useState("");
   const [price, setPrice] = useState("");
   const [location, setLocation] = useState("");
+  const [description, setDescription] = useState("");
+  const [gender, setGender] = useState("");
+  const [intakeDate, setIntakeDate] = useState("");
+  const [size, setSize] = useState("");
   const [editingCard, setEditingCard] = useState<CardData | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [formFeedback, setFormFeedback] = useState<Feedback>(null);
@@ -69,6 +74,10 @@ function CardUI() {
     setAge("");
     setPrice("");
     setLocation("");
+    setDescription("");
+    setGender("");
+    setIntakeDate("");
+    setSize("");
   }
 
   function startEditing(card: CardData): void {
@@ -78,6 +87,10 @@ function CardUI() {
     setAge(card.age?.toString() ?? "");
     setPrice(card.price?.toString() ?? "");
     setLocation(card.location ?? "");
+    setDescription(card.description ?? "");
+    setGender(card.gender ?? "");
+    setIntakeDate(card.intakeDate?.split("T")[0] ?? "");
+    setSize(card.size ?? "");
     setFormFeedback(null);
   }
 
@@ -90,6 +103,11 @@ function CardUI() {
   // Adds a new card, or saves changes to the card being edited
   async function handleSave(e: FormEvent): Promise<void> {
     e.preventDefault();
+    if (!canManageListings) {
+      setFormFeedback({ text: "Only shelter accounts can manage dog listings.", isError: true });
+      return;
+    }
+
     setIsSaving(true);
     setFormFeedback(null);
 
@@ -99,8 +117,12 @@ function CardUI() {
       breed,
       price: price ? parseFloat(price) : 0,
       location,
+      description,
     };
     if (age) fields.age = parseFloat(age);
+    if (gender) fields.gender = gender;
+    if (intakeDate) fields.intakeDate = intakeDate;
+    if (size) fields.size = size;
 
     try {
       const res = editingCard
@@ -115,10 +137,10 @@ function CardUI() {
       if (editingCard) {
         // Swap the old version of the card for the updated one
         setCards((current) => current.map((c) => (c._id === res.data._id ? res.data : c)));
-        setFormFeedback({ text: "Card updated successfully!", isError: false });
+        setFormFeedback({ text: "Dog listing updated successfully!", isError: false });
       } else {
         setCards((current) => [...current, res.data]);
-        setFormFeedback({ text: "Card has been added", isError: false });
+        setFormFeedback({ text: "Dog has been added to the shelter listings", isError: false });
       }
       resetForm();
     } catch (error: unknown) {
@@ -129,7 +151,7 @@ function CardUI() {
   }
 
   async function handleDelete(id: string): Promise<void> {
-    if (!window.confirm("Are you sure you want to delete this card?")) return;
+    if (!window.confirm("Are you sure you want to remove this dog listing?")) return;
 
     try {
       const res = await apiFetch<null>(`api/cards/${id}`, { method: "DELETE" });
@@ -141,7 +163,7 @@ function CardUI() {
 
       setCards((current) => current.filter((c) => c._id !== id));
       if (editingCard?._id === id) resetForm();
-      setFormFeedback({ text: "Card deleted successfully", isError: false });
+      setFormFeedback({ text: "Dog listing removed successfully", isError: false });
     } catch (error: unknown) {
       setFormFeedback({ text: (error as Error).toString(), isError: true });
     }
@@ -152,11 +174,11 @@ function CardUI() {
       <div className="card shadow-sm border-0 rounded-4 p-4 p-md-5 bg-white mb-4">
         <div className="d-flex align-items-center gap-3 mb-4 border-bottom pb-3">
           <div className="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style={{ width: "52px", height: "52px" }}>
-            <i className="bi bi-credit-card-2-front-fill fs-3" aria-hidden="true"></i>
+            <i className="bi bi-heart-fill fs-3" aria-hidden="true"></i>
           </div>
           <div className="ms-2">
             <h1 className="h3 fw-bold text-body-emphasis mb-1">Welcome {session.firstName} {session.lastName}</h1>
-            <p className="text-secondary small mb-0">Manage and search your collection of cards efficiently.</p>
+            <p className="text-secondary small mb-0">Manage your adoption listings.</p>
           </div>
         </div>
 
@@ -166,7 +188,7 @@ function CardUI() {
             <div className="card h-100 border-0 bg-light-subtle shadow-sm rounded-3 p-4">
               <h2 className="h5 fw-bold text-body-emphasis mb-3 d-flex align-items-center gap-2">
                 <i className="bi bi-search text-primary" aria-hidden="true"></i>
-                Search Cards
+                Find a Dog
               </h2>
               <form onSubmit={handleSearch}>
                 <div className="mb-3">
@@ -185,7 +207,7 @@ function CardUI() {
                       {isSearching
                         ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         : <i className="bi bi-search" aria-hidden="true"></i>}
-                      <span>Search Card</span>
+                      <span>Search Dogs</span>
                     </button>
                   </div>
                 </div>
@@ -199,17 +221,22 @@ function CardUI() {
                 >
                   {searchFeedback}
                 </span>
-                <CardList cards={cards} onDelete={handleDelete} onEdit={startEditing} />
+                <CardList
+                  cards={cards}
+                  onDelete={canManageListings ? handleDelete : undefined}
+                  onEdit={canManageListings ? startEditing : undefined}
+                />
               </div>
             </div>
           </div>
 
-          {/* Add / edit form */}
-          <div className="col-12 col-lg-6">
+          {/* Shelter listing management */}
+          {canManageListings && (
+            <div className="col-12 col-lg-6">
             <div className="card h-100 border-0 bg-light-subtle shadow-sm rounded-3 p-4">
               <h2 className="h5 fw-bold text-body-emphasis mb-3 d-flex align-items-center gap-2">
                 <i className={editingCard ? "bi bi-pencil-square text-warning" : "bi bi-plus-circle-fill text-success"} aria-hidden="true"></i>
-                {editingCard ? "Edit Card" : "Add New Card"}
+                {editingCard ? "Edit Dog Listing" : "Add a Shelter Dog"}
               </h2>
               <form onSubmit={handleSave}>
                 <div className="row g-3 mb-3">
@@ -233,12 +260,38 @@ function CardUI() {
                     <label htmlFor="location" className="form-label fw-semibold">Location</label>
                     <input type="text" className="form-control" id="location" placeholder="Location" value={location} onChange={(e) => setLocation(e.target.value)} />
                   </div>
+                  <div className="col-12">
+                    <label htmlFor="description" className="form-label fw-semibold">Description</label>
+                    <textarea className="form-control" id="description" rows={3} placeholder="Tell adopters about this dog" value={description} onChange={(e) => setDescription(e.target.value)} />
+                  </div>
+                  <div className="col-12 col-sm-6">
+                    <label htmlFor="gender" className="form-label fw-semibold">Gender</label>
+                    <select className="form-select" id="gender" value={gender} onChange={(e) => setGender(e.target.value)}>
+                      <option value="">Select gender</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="unknown">Unknown</option>
+                    </select>
+                  </div>
+                  <div className="col-12 col-sm-6">
+                    <label htmlFor="intakeDate" className="form-label fw-semibold">Intake Date</label>
+                    <input type="date" className="form-control" id="intakeDate" value={intakeDate} onChange={(e) => setIntakeDate(e.target.value)} />
+                  </div>
+                  <div className="col-12">
+                    <label htmlFor="size" className="form-label fw-semibold">Size</label>
+                    <select className="form-select" id="size" value={size} onChange={(e) => setSize(e.target.value)}>
+                      <option value="">Select size</option>
+                      <option value="small">Small</option>
+                      <option value="medium">Medium</option>
+                      <option value="large">Large</option>
+                    </select>
+                  </div>
                 </div>
                 <button type="submit" id="addCardButton" className="btn btn-primary px-4 py-2 fw-semibold d-flex align-items-center justify-content-center gap-2 w-100" disabled={isSaving}>
                   {isSaving
                     ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     : <i className="bi bi-save" aria-hidden="true"></i>}
-                  <span>{editingCard ? "Update Card" : "Add Card"}</span>
+                  <span>{editingCard ? "Update Listing" : "Add Dog"}</span>
                 </button>
                 {editingCard && (
                   <button type="button" id="cancelEditButton" className="btn btn-link w-100 mt-2 text-secondary" onClick={resetForm}>Cancel Edit</button>
@@ -257,7 +310,21 @@ function CardUI() {
                 </span>
               </div>
             </div>
-          </div>
+            </div>
+          )}
+          {!canManageListings && (
+              <div className="col-12 col-lg-6">
+                <div className="card h-100 border-0 bg-light-subtle shadow-sm rounded-3 p-4">
+                  <h2 className="h5 fw-bold text-body-emphasis mb-2">
+                    <i className="bi bi-house-heart text-primary me-2" aria-hidden="true"></i>
+                    Shelter accounts only
+                  </h2>
+                  <p className="text-secondary mb-0">
+                    Only shelter accounts can add or manage dog listings. You can browse and search available dogs here.
+                  </p>
+                </div>
+              </div>
+          )}
         </div>
       </div>
     </main>

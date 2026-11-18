@@ -9,6 +9,7 @@ function startSession({ token, user }: AuthResponse): void {
     id: user._id,
     firstName: user.firstName,
     lastName: user.lastName,
+    role: user.role,
   });
 }
 
@@ -118,13 +119,13 @@ function Login() {
             ></i>
           </div>
           <h2 className="h4 fw-bold text-body-emphasis mb-2">
-            {isRegisterMode ? "Create Account" : "Account Login"}
+            {isRegisterMode ? "Join MyShiba" : "Shelter Account Login"}
           </h2>
           <span
             id="inner-title"
             className="badge bg-primary-subtle text-primary-emphasis fw-semibold px-3 py-2"
           >
-            {isRegisterMode ? "NEW USER REGISTRATION" : `PLEASE LOG IN: ${import.meta.env.PROD ? "Production" : "Dev"}`}
+            {isRegisterMode ? "SHELTER OR ADOPTER REGISTRATION" : "WELCOME TO MYSHIBA"}
           </span>
         </div>
 
@@ -208,7 +209,7 @@ function Login() {
               ) : (
                 <>
                   <i className="bi bi-box-arrow-in-right" aria-hidden="true"></i>
-                  <span>Do It</span>
+                  <span>Sign In</span>
                 </>
               )}
             </button>

@@ -5,6 +5,7 @@ export interface Session {
   id: string;
   firstName: string;
   lastName: string;
+  role?: string;
 }
 
 const STORAGE_KEY = "user_data";

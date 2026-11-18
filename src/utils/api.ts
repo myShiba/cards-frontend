@@ -15,6 +15,7 @@ export interface ApiUser {
   firstName: string;
   lastName: string;
   login: string;
+  role?: string;
 }
 
 // The body returned by POST /api/auth/login and POST /api/users
